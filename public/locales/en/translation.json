@@ -1,0 +1,214 @@
+{
+  "loading": {
+    "loading_page": "Loading page",
+    "please_wait": "Please wait..."
+  },
+  "menu": {
+    "dashboard": "Dashboard",
+    "employees": "Employees",
+    "attendances": "Attendances",
+    "vacations": "Vacations",
+    "requests": "Requests",
+    "payroll": "Payroll",
+    "accounting": "Accounting",
+    "companies": "Companies"
+  },
+  "footer": {
+    "repository": "Repository",
+    "documentation": "Documentation"
+  },
+  "settings": {
+    "appearance": "Appearance & Language",
+    "user_preferences": "User Preferences",
+    "update_appearance": "Update appearance settings",
+    "update_preferences": "Update your settings",
+    "companies": "Companies"
+  },
+  "appearance": {
+    "theme": "Theme",
+    "language": "Language",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "buttons": {
+    "save": "Save",
+    "save_preferences": "Save Preferences",
+    "saving": "Saving...",
+    "submit": "Submit",
+    "cancel": "Cancel"
+  },
+  "messages": {
+    "preferences_updated": "Preferences updated successfully",
+    "update_failed": "Update failed",
+    "no_active_company": "You are not associated with any active company. Create a new company or ask your manager to send you a company invitation."
+  },
+  "pages": {
+    "dashboard": "Dashboard",
+    "settings": "Settings",
+    "profile": "Profile"
+  },
+  "profile": {
+    "title": "Profile Settings",
+    "information": "Profile Information",
+    "update_info": "Update your name and email address",
+    "name": "Name",
+    "full_name": "Full name",
+    "email": "Email",
+    "email_address": "Email address",
+    "unverified_email": "Your email address is unverified.",
+    "resend_verification": "Click here to resend the verification email.",
+    "verification_sent": "A new verification link has been sent to your email address."
+  },
+  "password": {
+    "title": "Password Settings",
+    "update_title": "Update Password",
+    "update_description": "Ensure your account is using a long, random password to stay secure",
+    "current": "Current password",
+    "new": "New password",
+    "confirm": "Confirm password",
+    "save_password": "Save Password"
+  },
+  "account": {
+    "delete_title": "Delete Account",
+    "delete_description": "Delete your account and all of its resources",
+    "warning": "Warning",
+    "warning_text": "Please proceed with caution, this cannot be undone.",
+    "delete_button": "Delete Account",
+    "delete_confirmation": "Are you sure you want to delete your account?",
+    "delete_explanation": "Once your account is deleted, all of its resources and data will also be permanently deleted. Please enter your password to confirm you would like to permanently delete your account."
+  },
+  "common": {
+    "saved": "Saved",
+    "save": "Save",
+    "cancel": "Cancel",
+    "password": "Password",
+    "back": "Back",
+    "remove": "Remove",
+    "loading": "Loading",
+    "close": "Close"
+  },
+  "user_menu": {
+    "settings": "Settings",
+    "logout": "Log out"
+  },
+  "app": {
+    "name": "Conan HR System"
+  },
+  "validation": {
+    "required": "is required",
+    "maxLength": "must not exceed {{length}} characters"
+  },
+  "company": {
+    "company_big_title" : "Your Companies",
+    "company_description_title" : "Manage your companies",
+    "company_description_text" : "Add, edit, and delete your companies",
+    "load_error" : "Failed to load companies data",
+    "no_companies" : "You are not associated with any company .. If you are the owner, try to create a new company, otherwise ask the owner or HR manager to send you an invitation to join the company",
+    "note_for_company": "Note: When you activate a company, the entire system will switch to display and use information related to that company. You can activate any company you want and work in the system with its data.",
+    "create": {
+      "button": "Create Company",
+      "title": "Create New Company",
+      "description": "Add a new company to your account",
+      "form": {
+        "name": "Company Name",
+        "name_placeholder": "Enter company name",
+        "description": "Company Description",
+        "description_placeholder": "Enter company description (optional)",
+        "submit": "Create Company"
+      },
+      "success": "Company created successfully",
+      "error": "Failed to create company"
+    },
+    "edit": {
+      "button": "Edit Company",
+      "title": "Edit Company",
+      "description": "Update your company information",
+      "form": {
+        "name": "Company Name",
+        "name_placeholder": "Enter company name",
+        "description": "Company Description",
+        "description_placeholder": "Enter company description (optional)",
+        "submit": "Update Company"
+      },
+      "success": "Company updated successfully",
+      "error": "Failed to update company"
+    },
+    "details": {
+      "title": "Company Details",
+      "description": "View company details and users",
+      "company_info": "Company Information",
+      "users_list": "Company Users",
+      "invite_button": "Invite User",
+      "back_button": "Back to Companies",
+      "table": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role"
+      },
+      "no_users": "No users found for this company",
+      "error_loading": "Error loading company users"
+    },
+    "delete": {
+      "button": "Delete Company",
+      "confirmation": "Are you sure you want to delete this company?",
+      "explanation": "WARNING: Deleting this company will hide all associated data from the system and cannot be easily reversed. All employees will lose access to company data. Please enter your password to confirm you would like to permanently delete this company."
+    },
+    "table": {
+      "company_name": "Company Name",
+      "status": "Status",
+      "role": "Role",
+      "actions": "Actions",
+      "activate": "Activate",
+      "active": "Active",
+      "inactive": "Inactive",
+      "delete": "Delete",
+      "edit": "Edit",
+      "roles": {
+        "manager": "Manager",
+        "hr": "HR",
+        "employee": "Employee"
+      }
+    },
+    "invite": {
+      "title": "Invite Users",
+      "description": "Search for users by email and invite them to join your company",
+      "search_placeholder": "Search by email...",
+      "already_invited": "Already invited",
+      "selected_users": "Selected Users",
+      "send_button": "Send Invites",
+      "success": "Invitations sent successfully",
+      "error": "Failed to send invitations",
+      "search_error": "Error searching for users"
+    },
+    "invites": {
+      "title": "User Invitations",
+      "description": "Manage your company invitations",
+      "view_button": "Invitations",
+      "no_invites": "No invitations found",
+      "error_loading": "Error loading invitations",
+      "accept_success": "Invitation accepted successfully",
+      "reject_success": "Invitation rejected successfully",
+      "delete_success": "Invitation deleted successfully",
+      "accept_error": "Error accepting invitation",
+      "reject_error": "Error rejecting invitation",
+      "delete_error": "Error deleting invitation",
+      "accept": "Accept",
+      "reject": "Reject",
+      "delete": "Delete",
+      "status": {
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "pending": "Pending"
+      },
+      "table": {
+        "sender": "Sender",
+        "recipient": "Recipient",
+        "company": "Company",
+        "status": "Status",
+        "date": "Date",
+        "actions": "Actions"
+      }
+    }
+  }
+}
