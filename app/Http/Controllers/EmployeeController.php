@@ -19,7 +19,9 @@ class EmployeeController extends Controller
     {
         $page = (int) $request->query('page', 1);
         $perPage = (int) $request->query('per_page', 10);
-        $list = EmployeeModel::GetEmployeeList($page, $perPage);
+        $search = (string) $request->query('search', '');
+        $newId = (int) $request->query('new_id', 0);
+        $list = EmployeeModel::GetEmployeeList($page, $perPage, $search, $newId);
         return response()->json($list);
     }
 }

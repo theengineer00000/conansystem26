@@ -121,6 +121,7 @@
       "success": "تم إنشاء الشركة بنجاح",
       "error": "فشل في إنشاء الشركة"
     },
+    
     "edit": {
       "button": "تعديل الشركة",
       "title": "تعديل الشركة",
@@ -283,13 +284,22 @@
       "submit": "إنشاء"
     },
     "required_hint": "الحقول التي تحمل * مطلوبة",
-    "table": {
+    "search_placeholder": "بحث بالاسم أو الهاتف أو المسمى...",
+    "total_employees_label": "إجمالي الموظفين",
+      "table": {
       "name": "الاسم",
-      "email": "البريد الإلكتروني",
+      "gender": "الجنس",
       "phone": "رقم الهاتف",
       "job_title": "المسمى الوظيفي",
       "hire_date": "تاريخ التعيين",
+      "status": "الحالة",
       "no_employees": "لا يوجد موظفون بعد"
+    }
+    ,
+    "status_labels": {
+      "active": "فعال",
+      "suspended": "موقوف",
+      "unknown": "غير معروف"
     }
   }
 }

@@ -121,6 +121,7 @@
       "success": "Company created successfully",
       "error": "Failed to create company"
     },
+    
     "edit": {
       "button": "Edit Company",
       "title": "Edit Company",
@@ -283,13 +284,22 @@
       "submit": "Create"
     },
     "required_hint": "Fields marked with * are required",
-    "table": {
+    "search_placeholder": "Search by name, phone, or job title...",
+    "total_employees_label": "Total employees",
+      "table": {
       "name": "Name",
-      "email": "Email",
+      "gender": "Gender",
       "phone": "Phone",
       "job_title": "Job Title",
       "hire_date": "Hire Date",
+      "status": "Status",
       "no_employees": "No employees yet"
+    }
+    ,
+    "status_labels": {
+      "active": "Active",
+      "suspended": "Suspended",
+      "unknown": "Unknown"
     }
   }
 }

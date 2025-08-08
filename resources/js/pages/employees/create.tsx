@@ -114,7 +114,10 @@ export default function EmployeeCreate() {
       const response = await axios.post('/employee/create', payload);
       if (response.data?.success) {
         setMessage({ type: 'success', text: t('employees.create.success') });
-        setTimeout(() => router.visit('/employees?success=1'), 800);
+        const newId = response.data?.id;
+        const qs = new URLSearchParams({ success: '1' });
+        if (newId) qs.set('new_id', String(newId));
+        setTimeout(() => router.visit('/employees?' + qs.toString()), 800);
       } else if (response.data?.errors) {
         // Server-side validation errors
         const serverErrors = response.data.errors as Record<string, string[]>;
