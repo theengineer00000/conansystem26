@@ -86,7 +86,8 @@
     "back": "عودة",
     "remove": "إزالة",
     "loading": "جاري التحميل",
-    "close": "إغلاق"
+    "close": "إغلاق",
+    "next": "التالي"
   },
   "user_menu": {
     "settings": "الإعدادات",
@@ -209,6 +210,86 @@
         "date": "التاريخ",
         "actions": "الإجراءات"
       }
+    }
+  }
+  ,
+  "employees": {
+    "employees_big_title": "الموظفون",
+    "employees_description_text": "إدارة الموظفين",
+    "sections": {
+      "basic_info": "المعلومات الأساسية",
+      "basic_info_desc": "بيانات الهوية ووسائل التواصل",
+      "employment_info": "معلومات التوظيف",
+      "employment_info_desc": "الوظيفة، القسم، المدير، وتاريخ التعيين",
+      "location_info": "الموقع",
+      "location_info_desc": "موقع العمل والعنوان",
+      "financial_info": "المعلومات المالية",
+      "financial_info_desc": "الراتب وبيانات البنك",
+      "additional_info": "معلومات إضافية",
+      "additional_info_desc": "بيانات شخصية"
+    },
+    "create": {
+      "button": "إنشاء موظف",
+      "description": "إضافة موظف جديد",
+      "success": "تم إنشاء الموظف بنجاح",
+      "error": "فشل في إنشاء الموظف"
+    },
+    "form": {
+      "full_name": "الاسم الكامل",
+      "full_name_hint": "مثال: محمد أحمد علي",
+      "email": "البريد الإلكتروني",
+      "email_hint": "مثال: user@example.com",
+      "phone": "رقم الهاتف",
+      "phone_hint": "مثال: +966512345678",
+      "national_id": "الرقم الوطني",
+      "national_id_hint": "مثال: 1234567890",
+      "job_title": "المسمى الوظيفي",
+      "job_title_hint": "مثال: مطور برمجيات أول",
+      "department_id": "رقم القسم",
+      "department_id_hint": "مثال: 12",
+      "manager_id": "المدير",
+      "manager_id_placeholder": "اختر المدير (اختياري)",
+      "hire_date": "تاريخ التعيين",
+      "hire_date_hint": "مثال: 2024-01-15",
+      "work_location": "مكان العمل",
+      "work_location_hint": "مثال: المقر الرئيسي - الرياض",
+      "address": "العنوان",
+      "address_hint": "مثال: طريق الملك فهد، مبنى 10",
+      "country": "الدولة",
+      "country_hint": "مثال: المملكة العربية السعودية",
+      "city": "المدينة",
+      "city_hint": "مثال: الرياض",
+      "salary": "الراتب",
+      "salary_hint": "مثال: 5000.00",
+      "currency": "العملة",
+      "bank_name": "اسم البنك",
+      "bank_name_hint": "مثال: مصرف الراجحي",
+      "bank_account_number": "رقم الحساب البنكي",
+      "bank_account_number_hint": "مثال: 1234567890123456",
+      "iban": "الآيبان",
+      "iban_hint": "مثال: SA4420000001234567891234",
+      "birth_date": "تاريخ الميلاد",
+      "birth_date_hint": "مثال: 1995-07-20",
+      "gender": "الجنس",
+      "gender_select": "اختر الجنس",
+      "gender_male": "ذكر",
+      "gender_female": "أنثى",
+      "marital_status": "الحالة الاجتماعية",
+      "marital_status_hint": "مثال: أعزب",
+      "nationality": "الجنسية",
+      "nationality_hint": "مثال: مصري",
+      "emergency_contact": "جهة اتصال للطوارئ",
+      "emergency_contact_hint": "مثال: أحمد (+20 10 1234 5678)",
+      "submit": "إنشاء"
+    },
+    "required_hint": "الحقول التي تحمل * مطلوبة",
+    "table": {
+      "name": "الاسم",
+      "email": "البريد الإلكتروني",
+      "phone": "رقم الهاتف",
+      "job_title": "المسمى الوظيفي",
+      "hire_date": "تاريخ التعيين",
+      "no_employees": "لا يوجد موظفون بعد"
     }
   }
 }

@@ -45,4 +45,5 @@ Route::middleware('auth')->group(function () {
     Route::get('settings/company/invites', function () {
         return Inertia::render('settings/company/invites');
     })->name('settings.company.invites');
+
 });

@@ -9,7 +9,7 @@
 
 @theme {
     --font-sans:
-        'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+        'Tajawal', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
@@ -66,7 +66,7 @@
     --card-foreground: #001C3A;
     --popover: #ffffff;
     --popover-foreground: #001C3A;
-    --primary: #3696FF;
+    --primary: #155dfc;
     --primary-foreground: #ffffff;
     --secondary: #d6e9ff;
     --secondary-foreground: #001C3A;
@@ -128,6 +128,22 @@
     --sidebar-accent-foreground: #ffffff;
     --sidebar-border: #102741;
     --sidebar-ring: #3696FF;
+
+    --color-neutral-50:  #f1f6fc;
+    --color-neutral-100: #d9e6f5;
+    --color-neutral-200: #b0cae8;
+    --color-neutral-300: #88addb;
+    --color-neutral-400: #5f90ce;
+    --color-neutral-500: #3763a8;
+    --color-neutral-600: #2a4c84;
+    --color-neutral-700: #1f3963;
+    --color-neutral-800: #142742;
+    --color-neutral-900: #0a1e36;  
+    
+    
+    
+
+
 }
 
 @layer base {

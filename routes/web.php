@@ -33,6 +33,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/user/invites/accept/{inviteId}', [\App\Http\Controllers\CompanyController::class, 'AcceptInvite']);
     Route::post('/user/invites/reject/{inviteId}', [\App\Http\Controllers\CompanyController::class, 'RejectInvite']);
     Route::delete('/user/invites/delete/{inviteId}', [\App\Http\Controllers\CompanyController::class, 'DeleteInvite']);
+
+    // Employee routes (API)
+    Route::post('/employee/create', [\App\Http\Controllers\EmployeeController::class, 'CreateEmployee']);
+    Route::get('/employees/list', [\App\Http\Controllers\EmployeeController::class, 'GetEmployeeList']);
+
+    // Employee pages (Inertia)
+    Route::get('/employees', function () {
+        return Inertia::render('employees/index');
+    })->name('employees.index');
+    Route::get('/employees/create', function () {
+        return Inertia::render('employees/create');
+    })->name('employees.create');
     
 });
 

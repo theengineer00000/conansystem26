@@ -86,7 +86,8 @@
     "back": "Back",
     "remove": "Remove",
     "loading": "Loading",
-    "close": "Close"
+    "close": "Close",
+    "next": "Next"
   },
   "user_menu": {
     "settings": "Settings",
@@ -209,6 +210,86 @@
         "date": "Date",
         "actions": "Actions"
       }
+    }
+  }
+  ,
+  "employees": {
+    "employees_big_title": "Employees",
+    "employees_description_text": "Manage your employees",
+    "sections": {
+      "basic_info": "Basic Information",
+      "basic_info_desc": "Employee identity and contact details",
+      "employment_info": "Employment Information",
+      "employment_info_desc": "Role, department, manager, and hiring",
+      "location_info": "Location",
+      "location_info_desc": "Work location and address",
+      "financial_info": "Financial Information",
+      "financial_info_desc": "Salary and banking details",
+      "additional_info": "Additional Information",
+      "additional_info_desc": "Personal details"
+    },
+    "create": {
+      "button": "Create Employee",
+      "description": "Add a new employee",
+      "success": "Employee created successfully",
+      "error": "Failed to create employee"
+    },
+    "form": {
+      "full_name": "Full name",
+      "full_name_hint": "e.g., John A. Doe",
+      "email": "Email",
+      "email_hint": "e.g., john.doe@example.com",
+      "phone": "Phone",
+      "phone_hint": "e.g., +966512345678",
+      "national_id": "National ID",
+      "national_id_hint": "e.g., 1234567890",
+      "job_title": "Job title",
+      "job_title_hint": "e.g., Senior Software Engineer",
+      "department_id": "Department ID",
+      "department_id_hint": "e.g., 12",
+      "manager_id": "Manager",
+      "manager_id_placeholder": "Select a manager (optional)",
+      "hire_date": "Hire date",
+      "hire_date_hint": "e.g., 2024-01-15",
+      "work_location": "Work location",
+      "work_location_hint": "e.g., Riyadh HQ",
+      "address": "Address",
+      "address_hint": "e.g., King Fahd Rd, Building 10",
+      "country": "Country",
+      "country_hint": "e.g., Saudi Arabia",
+      "city": "City",
+      "city_hint": "e.g., Riyadh",
+      "salary": "Salary",
+      "salary_hint": "e.g., 5000.00",
+      "currency": "Currency",
+      "bank_name": "Bank name",
+      "bank_name_hint": "e.g., Al Rajhi Bank",
+      "bank_account_number": "Bank account number",
+      "bank_account_number_hint": "e.g., 1234567890123456",
+      "iban": "IBAN",
+      "iban_hint": "e.g., SA4420000001234567891234",
+      "birth_date": "Birth date",
+      "birth_date_hint": "e.g., 1995-07-20",
+      "gender": "Gender",
+      "gender_select": "Select gender",
+      "gender_male": "Male",
+      "gender_female": "Female",
+      "marital_status": "Marital status",
+      "marital_status_hint": "e.g., Single",
+      "nationality": "Nationality",
+      "nationality_hint": "e.g., Egyptian",
+      "emergency_contact": "Emergency contact",
+      "emergency_contact_hint": "e.g., Ahmed (+20 10 1234 5678)",
+      "submit": "Create"
+    },
+    "required_hint": "Fields marked with * are required",
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "job_title": "Job Title",
+      "hire_date": "Hire Date",
+      "no_employees": "No employees yet"
     }
   }
 }

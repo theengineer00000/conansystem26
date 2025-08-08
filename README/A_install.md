@@ -35,5 +35,3 @@ http://localhost:8000
 
 npm install @radix-ui/react-radio-group
 
-
-سيسي
