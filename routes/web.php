@@ -37,6 +37,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Employee routes (API)
     Route::post('/employee/create', [\App\Http\Controllers\EmployeeController::class, 'CreateEmployee']);
     Route::get('/employees/list', [\App\Http\Controllers\EmployeeController::class, 'GetEmployeeList']);
+    Route::get('/employee/{employeeId}', [\App\Http\Controllers\EmployeeController::class, 'GetEmployeeDetails']);
+    Route::post('/employee/update/{employeeId}', [\App\Http\Controllers\EmployeeController::class, 'UpdateEmployee']);
+    Route::post('/employee/status/{employeeId}', [\App\Http\Controllers\EmployeeController::class, 'UpdateEmployeeStatus']);
+    Route::post('/employee/link-user/{employeeId}', [\App\Http\Controllers\EmployeeController::class, 'LinkEmployeeToUser']);
 
     // Employee pages (Inertia)
     Route::get('/employees', function () {
@@ -45,6 +49,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/employees/create', function () {
         return Inertia::render('employees/create');
     })->name('employees.create');
+    Route::get('/employees/details/{employeeId}', function ($employeeId) {
+        return Inertia::render('employees/details', [
+            'employeeId' => $employeeId,
+        ]);
+    })->name('employees.details');
     
 });
 

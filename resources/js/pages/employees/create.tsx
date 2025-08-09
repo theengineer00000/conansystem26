@@ -119,19 +119,23 @@ export default function EmployeeCreate() {
         if (newId) qs.set('new_id', String(newId));
         setTimeout(() => router.visit('/employees?' + qs.toString()), 800);
       } else if (response.data?.errors) {
-        // Server-side validation errors
+        // Server-side validation / unique constraint errors
         const serverErrors = response.data.errors as Record<string, string[]>;
         const flat: Record<string, string> = {};
         Object.entries(serverErrors).forEach(([key, arr]) => {
           if (Array.isArray(arr) && arr.length > 0) flat[key] = arr[0];
         });
         setErrors(flat);
-        setMessage({ type: 'error', text: t('employees.create.error') });
+        const serverMsg = (response.data && response.data.message) ? String(response.data.message) : '';
+        setMessage({ type: 'error', text: serverMsg || t('employees.create.error') });
       } else {
-        setMessage({ type: 'error', text: t('employees.create.error') });
+        const serverMsg = (response.data && response.data.message) ? String(response.data.message) : '';
+        setMessage({ type: 'error', text: serverMsg || t('employees.create.error') });
       }
     } catch (error) {
-      setMessage({ type: 'error', text: t('employees.create.error', { defaultValue: 'Failed to create employee' }) });
+      const anyErr = error as any;
+      const serverMsg = anyErr?.response?.data?.message ? String(anyErr.response.data.message) : '';
+      setMessage({ type: 'error', text: serverMsg || t('employees.create.error', { defaultValue: 'Failed to create employee' }) });
     } finally {
       setIsSubmitting(false);
     }

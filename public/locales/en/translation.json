@@ -300,6 +300,33 @@
       "active": "Active",
       "suspended": "Suspended",
       "unknown": "Unknown"
+    },
+    "details": {
+      "title": "Employee Details",
+      "description": "View and edit employee information",
+      "load_error": "Failed to load employee",
+      "update_success": "Employee updated successfully",
+      "update_error": "Failed to update employee",
+      "activate": "Activate Employee",
+      "suspend": "Suspend Employee",
+      "archive": "Archive Employee",
+      "delete": "Delete Employee Permanently",
+      "confirm_delete_title": "Critical Warning",
+      "confirm_delete_text": "This will permanently delete the employee and all related data. This action cannot be undone. Proceed?",
+      "status_updated": "Employee status updated successfully",
+      "status_update_failed": "Failed to update employee status"
+    },
+    "link": {
+      "open_button": "Link Employee to User",
+      "title": "Link Employee to User",
+      "description": "Search by email and pick a user to link with this employee",
+      "search_placeholder": "Search by email...",
+      "select_user": "Select user",
+      "link_button": "Link",
+      "move_confirm": "This employee is already linked to another user. Do you want to move the link to the new user?",
+      "confirm_checkbox": "I confirm moving the link",
+      "linked_success": "Employee linked to user successfully",
+      "linked_error": "Failed to link employee to user"
     }
   }
 }

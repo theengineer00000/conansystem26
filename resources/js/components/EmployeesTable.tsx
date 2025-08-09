@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from '@inertiajs/react';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
@@ -46,7 +47,9 @@ export default function EmployeesTable({ employees, labels, isRTL = false }: { e
             {employees.map((emp) => (
               <tr key={emp.id} className="border-b hover:bg-muted/50">
                 <td className="px-4 py-3">
-                  <span>{emp.full_name}</span>
+                  <Link href={`/employees/details/${emp.id}`} className="text-blue-600 hover:underline">
+                    {emp.full_name}
+                  </Link>
                   {emp.is_new ? (
                     <span className="ms-2 inline-flex items-center rounded-full bg-green-600/90 text-white text-[10px] px-2 py-0.5 align-middle">جديد</span>
                   ) : null}
