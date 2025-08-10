@@ -6,6 +6,11 @@
   "menu": {
     "dashboard": "Dashboard",
     "employees": "Employees",
+    "employees_list": "Employees List",
+    "employees_create": "Create Employee",
+    "departments": "Departments",
+    "job_positions": "Job Positions",
+    "archived_employees": "Archived Employees",
     "attendances": "Attendances",
     "vacations": "Vacations",
     "requests": "Requests",
@@ -81,13 +86,16 @@
   "common": {
     "saved": "Saved",
     "save": "Save",
+    "new": "New",
     "cancel": "Cancel",
     "password": "Password",
     "back": "Back",
     "remove": "Remove",
     "loading": "Loading",
     "close": "Close",
-    "next": "Next"
+    "next": "Next",
+    "no_results": "No results found",
+    "edit": "Edit"
   },
   "user_menu": {
     "settings": "Settings",
@@ -98,7 +106,37 @@
   },
   "validation": {
     "required": "is required",
-    "maxLength": "must not exceed {{length}} characters"
+    "maxLength": "must not exceed {{length}} characters",
+    "full_name_invalid": "Full name format is invalid",
+    "phone_invalid": "Phone number format is invalid",
+    "national_id_invalid": "National ID format is invalid",
+    "date_format_exact": "Date format must be {{format}}",
+    "bank_account_number_invalid": "The bank account number field format is invalid.",
+    "iban_invalid": "IBAN format is invalid",
+    "attributes": {
+      "full_name": "Full name",
+      "email": "Email",
+      "phone": "Phone",
+      "national_id": "National ID",
+      "job_title": "Job title",
+      "department": "Department",
+      "manager": "Manager",
+      "hire_date": "Hire date",
+      "work_location": "Work location",
+      "address": "Address",
+      "country": "Country",
+      "city": "City",
+      "salary": "Salary",
+      "currency": "Currency",
+      "bank_name": "Bank name",
+      "bank_account_number": "Bank account number",
+      "iban": "IBAN",
+      "birth_date": "Birth date",
+      "gender": "Gender",
+      "marital_status": "Marital status",
+      "nationality": "Nationality",
+      "emergency_contact": "Emergency contact"
+    }
   },
   "company": {
     "company_big_title" : "Your Companies",
@@ -217,6 +255,7 @@
   "employees": {
     "employees_big_title": "Employees",
     "employees_description_text": "Manage your employees",
+    "archived_description_text": "View archived employees",
     "sections": {
       "basic_info": "Basic Information",
       "basic_info_desc": "Employee identity and contact details",
@@ -271,6 +310,8 @@
       "iban_hint": "e.g., SA4420000001234567891234",
       "birth_date": "Birth date",
       "birth_date_hint": "e.g., 1995-07-20",
+      "picture": "Profile picture",
+      "picture_hint": "Upload a square image for best results",
       "gender": "Gender",
       "gender_select": "Select gender",
       "gender_male": "Male",
@@ -281,16 +322,24 @@
       "nationality_hint": "e.g., Egyptian",
       "emergency_contact": "Emergency contact",
       "emergency_contact_hint": "e.g., Ahmed (+20 10 1234 5678)",
-      "submit": "Create"
+      "submit": "Create",
+      "department": "Department",
+      "department_placeholder": "Select department",
+      "department_search_placeholder": "Search for department...",
+      "manager": "Direct Manager",
+      "manager_placeholder": "Select manager",
+      "manager_search_placeholder": "Search for manager..."
     },
     "required_hint": "Fields marked with * are required",
     "search_placeholder": "Search by name, phone, or job title...",
     "total_employees_label": "Total employees",
       "table": {
+      "picture": "Picture",
       "name": "Name",
       "gender": "Gender",
       "phone": "Phone",
       "job_title": "Job Title",
+      "department": "Department",
       "hire_date": "Hire Date",
       "status": "Status",
       "no_employees": "No employees yet"
@@ -299,6 +348,7 @@
     "status_labels": {
       "active": "Active",
       "suspended": "Suspended",
+      "archived": "Archived",
       "unknown": "Unknown"
     },
     "details": {
@@ -327,6 +377,97 @@
       "confirm_checkbox": "I confirm moving the link",
       "linked_success": "Employee linked to user successfully",
       "linked_error": "Failed to link employee to user"
-    }
+    },
+    "export_excel": "Export to Excel"
+  },
+  "departments": {
+    "title": "Departments",
+    "description": "Manage company departments",
+    "archived_title": "Archived Departments",
+    "archived_description": "View archived departments",
+    "search_placeholder": "Search by department name...",
+    "create_button": "Create Department",
+    "create_description": "Enter department name and pick a manager from employees",
+    "edit": "Edit Department",
+    "edit_description": "Update department info and manager",
+    "back_to_list": "Back to Departments",
+    "details_title": "Department Details",
+    "total_label": "Total departments",
+    "no_departments": "No departments",
+    "form": {
+      "name": "Department Name",
+      "admin": "Department Manager",
+      "admin_placeholder": "Select department manager",
+      "admin_search_placeholder": "Search by name...",
+      "selected_admin": "Current manager"
+    },
+    "table": {
+      "name": "Name",
+      "admin": "Manager",
+      "actions": "Actions"
+    },
+    "update_success": "Department updated successfully",
+    "update_error": "Failed to update department",
+    "create_error": "Failed to create department",
+    "status_updated": "Status updated",
+    "archive": "Archive Department",
+    "delete": "Delete Department",
+    "activate": "Activate Department",
+    "load_error": "Failed to load department"
+  },
+  "job_positions": {
+    "title": "Job Positions",
+    "description": "Manage job positions within your company",
+    "archived_title": "Archived Job Positions",
+    "archived_description": "View archived job positions",
+    "search_placeholder": "Search by position name...",
+    "create_button": "Create Position",
+    "create_description": "Enter position name and select responsible person",
+    "edit": "Edit Position",
+    "edit_description": "Update position details and responsible person",
+    "back_to_list": "Back to Positions",
+    "details": {
+      "title": "Position Details",
+      "description": "View job position details",
+      "created_at": "Created At",
+      "updated_at": "Last Updated"
+    },
+    "total_label": "Total Positions",
+    "total_archived_label": "Total Archived Positions",
+    "no_positions": "No positions found",
+    "no_archived_positions": "No archived positions",
+    "not_found": "Position not found",
+    "form": {
+      "name": "Position Name",
+      "admin": "Responsible Person",
+      "admin_placeholder": "Select responsible person",
+      "admin_search_placeholder": "Search by name..."
+    },
+    "table": {
+      "name": "Position Name",
+      "admin": "Responsible",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Active",
+      "archived": "Archived"
+    },
+    "update_success": "Position updated successfully",
+    "update_error": "Failed to update position",
+    "create_error": "Failed to create position",
+    "status_updated": "Position status updated",
+    "archive": "Archive Position",
+    "delete": "Delete Position",
+    "activate": "Activate Position",
+    "load_error": "Failed to load position"
+  },
+  "upload": {
+    "click_to_upload": "Click to upload",
+    "or_drag_drop": "or drag and drop",
+    "max_size": "Max 5MB",
+    "file_too_large": "File size must be less than 5MB",
+    "change_image": "Change image",
+    "remove_image": "Remove image"
   }
 }

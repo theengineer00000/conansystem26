@@ -6,8 +6,15 @@ import StatusMessage, { type StatusMessageType } from '@/components/status-messa
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import LoadingSpinner from '@/components/loading-spinner';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger, DialogClose } from '@/components/ui/dialog';
+import PlusSolidFullIcon from '@/components/icons/PlusSolidFullIcon';
+import BoxArchiveSolidFullIcon from '@/components/icons/BoxArchiveSolidFullIcon';
+import TrashSolidFullIcon from '@/components/icons/TrashSolidFullIcon';
+import CirclePlaySolidFullIcon from '@/components/icons/CirclePlaySolidFullIcon';
+import CirclePauseSolidFullIcon from '@/components/icons/CirclePauseSolidFullIcon';
+import SearchableSelect from '@/components/SearchableSelect';
 // Lightweight debounce to avoid extra type deps
 function debounce<F extends (...args: any[]) => void>(fn: F, wait = 300) {
   let timeout: any;
@@ -17,12 +24,13 @@ function debounce<F extends (...args: any[]) => void>(fn: F, wait = 300) {
   } as F;
 }
 import InviteUsersDialog from '@/pages/settings/company/components/InviteUsersDialog';
+import ShareNodesSolidFullIcon from '@/components/icons/ShareNodesSolidFullIcon';
 import { Label } from '@/components/ui/label';
 import InputError from '@/components/input-error';
-import LoadingSpinner from '@/components/loading-spinner';
 import { type BreadcrumbItem } from '@/types';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import ImageUpload from '@/components/image-upload';
 // removed duplicate import
 
 type Props = { employeeId: string };
@@ -42,8 +50,13 @@ export default function EmployeeDetails({ employeeId }: Props) {
   const breadcrumbs = getBreadcrumbs(t, empName);
 
   const [formData, setFormData] = useState<Record<string, any>>({});
+  const [pictureFile, setPictureFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSaving, setIsSaving] = useState(false);
   const [statusFlags, setStatusFlags] = useState({ is_active: 0, is_suspended: 0, is_archived: 0, is_deleted: 0 });
+  const [departmentName, setDepartmentName] = useState('');
+  const [managerName, setManagerName] = useState('');
+  const [existingPictureUrl, setExistingPictureUrl] = useState<string>('');
 
   useEffect(() => {
     const loadEmployee = async () => {
@@ -77,6 +90,9 @@ export default function EmployeeDetails({ employeeId }: Props) {
             emergency_contact: d.emergency_contact || '',
           });
           setEmpName(d.full_name || '');
+          setDepartmentName(d.department_name || '');
+          setManagerName(d.manager_name || '');
+          setExistingPictureUrl(d.picture_url || '');
           setStatusFlags({
             is_active: Number(d.is_active || 0),
             is_suspended: Number(d.is_suspended || 0),
@@ -98,6 +114,38 @@ export default function EmployeeDetails({ employeeId }: Props) {
     };
     loadEmployee();
   }, [employeeId, t]);
+
+  const searchDepartments = async (query: string) => {
+    try {
+      const res = await axios.get('/departments/list', {
+        params: { page: 1, per_page: 15, search: query }
+      });
+      const data = res.data?.data || [];
+      return data.map((dept: any) => ({
+        id: dept.id,
+        label: dept.name
+      }));
+    } catch (error) {
+      console.error('Error searching departments:', error);
+      return [];
+    }
+  };
+
+  const searchEmployees = async (query: string) => {
+    try {
+      const res = await axios.get('/employees/search', { 
+        params: { q: query, limit: 15 } 
+      });
+      const data = res.data?.data || [];
+      return data.map((emp: any) => ({
+        id: emp.id,
+        label: emp.full_name
+      }));
+    } catch (error) {
+      console.error('Error searching employees:', error);
+      return [];
+    }
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
@@ -125,21 +173,32 @@ export default function EmployeeDetails({ employeeId }: Props) {
     e.preventDefault();
     if (!validate()) return;
     setMessage(null);
+    setIsSaving(true);
     try {
-      const payload: Record<string, any> = {
+      const fd = new FormData();
+      Object.entries({
         ...formData,
-        salary: formData.salary !== '' ? Number(formData.salary) : undefined,
-        department_id: formData.department_id !== '' ? Number(formData.department_id) : undefined,
-        manager_id: formData.manager_id !== '' ? Number(formData.manager_id) : undefined,
-      };
-      const res = await axios.post(`/employee/update/${employeeId}`, payload);
+        salary: formData.salary !== '' ? String(Number(formData.salary)) : '',
+        department_id: formData.department_id !== '' ? String(formData.department_id) : '',
+        manager_id: formData.manager_id !== '' ? String(formData.manager_id) : '',
+      }).forEach(([k, v]) => fd.append(k, v as any));
+      if (pictureFile) fd.append('picture_file', pictureFile);
+      const res = await axios.post(`/employee/update/${employeeId}`, fd, { headers: { 'Content-Type': 'multipart/form-data' } });
       if (res.data?.success) {
         setMessage({ type: 'success', text: t('employees.details.update_success', { defaultValue: 'Employee updated successfully' }) });
       } else if (res.data?.errors) {
         const serverErrors = res.data.errors as Record<string, string[]>;
         const flat: Record<string, string> = {};
         Object.entries(serverErrors).forEach(([key, arr]) => {
-          if (Array.isArray(arr) && arr.length > 0) flat[key] = arr[0];
+          if (Array.isArray(arr) && arr.length > 0) {
+            // Check if the error message is a translation key and translate it
+            const errorMsg = arr[0];
+            if (errorMsg.startsWith('validation.')) {
+              flat[key] = t(errorMsg, { defaultValue: errorMsg });
+            } else {
+              flat[key] = errorMsg;
+            }
+          }
         });
         setErrors(flat);
         const serverMsg = (res.data && res.data.message) ? String(res.data.message) : '';
@@ -152,6 +211,8 @@ export default function EmployeeDetails({ employeeId }: Props) {
       const anyErr = e as any;
       const serverMsg = anyErr?.response?.data?.message ? String(anyErr.response.data.message) : '';
       setMessage({ type: 'error', text: serverMsg || t('employees.details.update_error', { defaultValue: 'Failed to update employee' }) });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -209,24 +270,28 @@ export default function EmployeeDetails({ employeeId }: Props) {
         {!isLoading && (
           <div className="flex flex-wrap items-center justify-end gap-2">
             {Number(statusFlags.is_active) === 0 && Number(statusFlags.is_deleted) === 0 && (
-              <Button onClick={() => updateStatus('active')} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+              <Button onClick={() => updateStatus('active')} className="bg-emerald-600 hover:bg-emerald-700 text-white inline-flex items-center gap-2">
+                <CirclePlaySolidFullIcon className="size-4 text-white fill-white" />
                 {t('employees.details.activate')}
               </Button>
             )}
             {Number(statusFlags.is_suspended) === 0 && Number(statusFlags.is_deleted) === 0 && (
-              <Button onClick={() => updateStatus('suspended')} className="bg-amber-600 hover:bg-amber-700 text-white">
+              <Button onClick={() => updateStatus('suspended')} className="bg-amber-600 hover:bg-amber-700 text-white inline-flex items-center gap-2">
+                <CirclePauseSolidFullIcon className="size-4 text-white fill-white" />
                 {t('employees.details.suspend')}
               </Button>
             )}
             {Number(statusFlags.is_archived) === 0 && Number(statusFlags.is_deleted) === 0 && (
-              <Button onClick={() => updateStatus('archived')} className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Button onClick={() => updateStatus('archived')} className="bg-blue-600 hover:bg-blue-700 text-white inline-flex items-center gap-2">
+                <BoxArchiveSolidFullIcon className="size-4 text-white fill-white" />
                 {t('employees.details.archive')}
               </Button>
             )}
             {Number(statusFlags.is_deleted) === 0 && (
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button className="bg-red-600 hover:bg-red-700 text-white">
+                  <Button className="bg-red-600 hover:bg-red-700 text-white inline-flex items-center gap-2">
+                    <TrashSolidFullIcon className="size-4 text-white fill-white" />
                     {t('employees.details.delete')}
                   </Button>
                 </DialogTrigger>
@@ -245,7 +310,9 @@ export default function EmployeeDetails({ employeeId }: Props) {
 
             {/* Link employee to user */}
             {Number(statusFlags.is_deleted) === 0 && (
-              <LinkEmployeeDialog employeeId={Number(employeeId)} />
+              <div className="inline-flex">
+                <LinkEmployeeDialog employeeId={Number(employeeId)} />
+              </div>
             )}
           </div>
         )}
@@ -306,14 +373,40 @@ export default function EmployeeDetails({ employeeId }: Props) {
                       <Input id="job_title" name="job_title" value={formData.job_title || ''} onChange={handleChange} dir={isRTL ? 'rtl' : 'ltr'} />
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor="department_id">{t('employees.form.department_id')}</Label>
-                      <Input id="department_id" name="department_id" value={formData.department_id ?? ''} onChange={handleChange} dir={isRTL ? 'rtl' : 'ltr'} aria-invalid={!!errors.department_id} />
-                      <InputError message={errors.department_id} />
+                      <Label htmlFor="department_id">{t('employees.form.department')}</Label>
+                      <SearchableSelect
+                        value={formData.department_id}
+                        onValueChange={(value) => {
+                          setFormData(prev => ({ ...prev, department_id: value }));
+                          if (errors.department_id) setErrors(prev => ({ ...prev, department_id: '' }));
+                        }}
+                        onSearch={searchDepartments}
+                        placeholder={t('employees.form.department_placeholder')}
+                        searchPlaceholder={t('employees.form.department_search_placeholder')}
+                        loadingText={t('common.loading')}
+                        noResultsText={t('common.no_results')}
+                        error={errors.department_id}
+                        initialOptions={departmentName && formData.department_id ? [{ id: formData.department_id, label: departmentName }] : []}
+                        defaultSearchQuery={departmentName}
+                      />
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor="manager_id">{t('employees.form.manager_id')}</Label>
-                      <Input id="manager_id" name="manager_id" value={formData.manager_id ?? ''} onChange={handleChange} dir={isRTL ? 'rtl' : 'ltr'} aria-invalid={!!errors.manager_id} />
-                      <InputError message={errors.manager_id} />
+                      <Label htmlFor="manager_id">{t('employees.form.manager')}</Label>
+                      <SearchableSelect
+                        value={formData.manager_id}
+                        onValueChange={(value) => {
+                          setFormData(prev => ({ ...prev, manager_id: value }));
+                          if (errors.manager_id) setErrors(prev => ({ ...prev, manager_id: '' }));
+                        }}
+                        onSearch={searchEmployees}
+                        placeholder={t('employees.form.manager_placeholder')}
+                        searchPlaceholder={t('employees.form.manager_search_placeholder')}
+                        loadingText={t('common.loading')}
+                        noResultsText={t('common.no_results')}
+                        error={errors.manager_id}
+                        initialOptions={managerName && formData.manager_id ? [{ id: formData.manager_id, label: managerName }] : []}
+                        defaultSearchQuery={managerName}
+                      />
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="hire_date">{t('employees.form.hire_date')} *</Label>
@@ -380,11 +473,13 @@ export default function EmployeeDetails({ employeeId }: Props) {
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="bank_account_number">{t('employees.form.bank_account_number')}</Label>
-                      <Input id="bank_account_number" name="bank_account_number" value={formData.bank_account_number || ''} onChange={handleChange} dir={isRTL ? 'rtl' : 'ltr'} />
+                      <Input id="bank_account_number" name="bank_account_number" value={formData.bank_account_number || ''} onChange={handleChange} dir={isRTL ? 'rtl' : 'ltr'} aria-invalid={!!errors.bank_account_number} />
+                      <InputError message={errors.bank_account_number} />
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="iban">{t('employees.form.iban')}</Label>
-                      <Input id="iban" name="iban" value={formData.iban || ''} onChange={handleChange} dir={isRTL ? 'rtl' : 'ltr'} />
+                      <Input id="iban" name="iban" value={formData.iban || ''} onChange={handleChange} dir={isRTL ? 'rtl' : 'ltr'} aria-invalid={!!errors.iban} />
+                      <InputError message={errors.iban} />
                     </div>
                   </div>
                 </div>
@@ -398,6 +493,22 @@ export default function EmployeeDetails({ employeeId }: Props) {
                 </div>
                 <div className="rounded-lg border p-4 bg-muted/30">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid gap-2 md:col-span-2">
+                      <ImageUpload
+                        id="picture_file"
+                        name="picture_file"
+                        label={t('employees.form.picture')}
+                        hint={t('employees.form.picture_hint', { defaultValue: 'Upload a square image for best results' })}
+                        error={errors.picture_file}
+                        value={pictureFile}
+                        existingUrl={existingPictureUrl}
+                        onChange={(file) => {
+                          setPictureFile(file);
+                          if (errors.picture_file) setErrors(prev => ({ ...prev, picture_file: '' }));
+                        }}
+                        maxSize={5}
+                      />
+                    </div>
                     <div className="grid gap-2">
                       <Label htmlFor="birth_date">{t('employees.form.birth_date')}</Label>
                       <Input id="birth_date" name="birth_date" type="date" value={formData.birth_date || ''} onChange={handleChange} />
@@ -430,8 +541,9 @@ export default function EmployeeDetails({ employeeId }: Props) {
                 <Button type="button" variant="outline" onClick={() => router.visit('/employees')}>
                   {t('common.back')}
                 </Button>
-                <Button type="submit" className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
-                  {t('buttons.save', { defaultValue: 'Save' })}
+                <Button type="submit" className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 inline-flex items-center gap-2" disabled={isSaving}>
+                  {isSaving && <LoadingSpinner size={16} />}
+                  <span>{isSaving ? t('buttons.saving') : t('buttons.save')}</span>
                 </Button>
               </div>
             </form>
@@ -572,7 +684,10 @@ function LinkEmployeeDialog({ employeeId }: { employeeId: number }) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-indigo-600 hover:bg-indigo-700 text-white">{t('employees.link.open_button')}</Button>
+        <Button className="bg-indigo-600 hover:bg-indigo-700 text-white inline-flex items-center gap-2">
+          <ShareNodesSolidFullIcon className="size-4 text-white fill-white" />
+          {t('employees.link.open_button')}
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogTitle>{t('employees.link.title')}</DialogTitle>

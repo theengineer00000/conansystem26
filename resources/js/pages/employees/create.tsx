@@ -13,6 +13,8 @@ import InputError from '@/components/input-error';
 import { type BreadcrumbItem } from '@/types';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
+import SearchableSelect from '@/components/SearchableSelect';
+import ImageUpload from '@/components/image-upload';
 
 const getBreadcrumbs = (t: (key: string) => string): BreadcrumbItem[] => [
   { title: t('employees.employees_big_title'), href: '/employees' },
@@ -58,6 +60,7 @@ export default function EmployeeCreate() {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [pictureFile, setPictureFile] = useState<File | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
@@ -66,6 +69,32 @@ export default function EmployeeCreate() {
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const searchDepartments = async (query: string) => {
+    try {
+      const res = await axios.get('/departments/list', {
+        params: { page: 1, per_page: 15, search: query }
+      });
+      const data = res.data?.data || [];
+      return data.map((dept: any) => ({ id: dept.id, label: dept.name }));
+    } catch (error) {
+      console.error('Error searching departments:', error);
+      return [];
+    }
+  };
+
+  const searchEmployees = async (query: string) => {
+    try {
+      const res = await axios.get('/employees/search', {
+        params: { q: query, limit: 15 }
+      });
+      const data = res.data?.data || [];
+      return data.map((emp: any) => ({ id: emp.id, label: emp.full_name }));
+    } catch (error) {
+      console.error('Error searching employees:', error);
+      return [];
     }
   };
 
@@ -104,12 +133,16 @@ export default function EmployeeCreate() {
     setMessage(null);
 
     try {
-      const payload: Record<string, any> = {
-        ...formData,
-        salary: formData.salary ? Number(formData.salary) : undefined,
-        department_id: formData.department_id ? Number(formData.department_id) : undefined,
-        manager_id: formData.manager_id ? Number(formData.manager_id) : undefined,
-      };
+      const payload = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        // Keep empty strings as-is for server-side normalization
+        if (value !== undefined && value !== null) {
+          payload.append(key, String(value));
+        }
+      });
+      if (pictureFile) {
+        payload.append('picture_file', pictureFile);
+      }
 
       const response = await axios.post('/employee/create', payload);
       if (response.data?.success) {
@@ -123,7 +156,15 @@ export default function EmployeeCreate() {
         const serverErrors = response.data.errors as Record<string, string[]>;
         const flat: Record<string, string> = {};
         Object.entries(serverErrors).forEach(([key, arr]) => {
-          if (Array.isArray(arr) && arr.length > 0) flat[key] = arr[0];
+          if (Array.isArray(arr) && arr.length > 0) {
+            // Check if the error message is a translation key and translate it
+            const errorMsg = arr[0];
+            if (errorMsg.startsWith('validation.')) {
+              flat[key] = t(errorMsg, { defaultValue: errorMsg });
+            } else {
+              flat[key] = errorMsg;
+            }
+          }
         });
         setErrors(flat);
         const serverMsg = (response.data && response.data.message) ? String(response.data.message) : '';
@@ -210,24 +251,38 @@ export default function EmployeeCreate() {
                     <p className="text-xs text-muted-foreground">{t('employees.form.job_title_hint')}</p>
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="department_id">{t('employees.form.department_id')}</Label>
-                    <Input id="department_id" name="department_id" value={formData.department_id} onChange={handleChange} dir={isRTL ? 'rtl' : 'ltr'} aria-invalid={!!errors.department_id} />
-                    <InputError message={errors.department_id} />
-                    <p className="text-xs text-muted-foreground">{t('employees.form.department_id_hint')}</p>
+                    <Label htmlFor="department_id">{t('employees.form.department')}</Label>
+                    <SearchableSelect
+                      value={formData.department_id}
+                      onValueChange={(value) => {
+                        setFormData(prev => ({ ...prev, department_id: String(value) }));
+                        if (errors.department_id) setErrors(prev => ({ ...prev, department_id: '' }));
+                      }}
+                      onSearch={searchDepartments}
+                      placeholder={t('employees.form.department_placeholder')}
+                      searchPlaceholder={t('employees.form.department_search_placeholder')}
+                      loadingText={t('common.loading')}
+                      noResultsText={t('common.no_results')}
+                      error={errors.department_id}
+                    />
+                    <p className="text-xs text-muted-foreground">{t('employees.form.department_placeholder')}</p>
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="manager_id">{t('employees.form.manager_id')}</Label>
-                    <select
-                      id="manager_id"
-                      name="manager_id"
+                    <Label htmlFor="manager_id">{t('employees.form.manager')}</Label>
+                    <SearchableSelect
                       value={formData.manager_id}
-                      onChange={handleChange}
-                      className="border-input focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] h-9 w-full rounded-md border bg-white text-black dark:bg-neutral-800 dark:text-white px-3 py-1 text-sm outline-none"
-                    >
-                      <option value="">{t('employees.form.manager_id_placeholder')}</option>
-                    </select>
-                    <InputError message={errors.manager_id} />
-                    <p className="text-xs text-muted-foreground">{t('employees.form.manager_id_placeholder')}</p>
+                      onValueChange={(value) => {
+                        setFormData(prev => ({ ...prev, manager_id: String(value) }));
+                        if (errors.manager_id) setErrors(prev => ({ ...prev, manager_id: '' }));
+                      }}
+                      onSearch={searchEmployees}
+                      placeholder={t('employees.form.manager_placeholder')}
+                      searchPlaceholder={t('employees.form.manager_search_placeholder')}
+                      loadingText={t('common.loading')}
+                      noResultsText={t('common.no_results')}
+                      error={errors.manager_id}
+                    />
+                    <p className="text-xs text-muted-foreground">{t('employees.form.manager_placeholder')}</p>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="hire_date">{t('employees.form.hire_date')} *</Label>
@@ -301,12 +356,14 @@ export default function EmployeeCreate() {
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="bank_account_number">{t('employees.form.bank_account_number')}</Label>
-                    <Input id="bank_account_number" name="bank_account_number" value={formData.bank_account_number} onChange={handleChange} dir={isRTL ? 'rtl' : 'ltr'} />
+                    <Input id="bank_account_number" name="bank_account_number" value={formData.bank_account_number} onChange={handleChange} dir={isRTL ? 'rtl' : 'ltr'} aria-invalid={!!errors.bank_account_number} />
+                    <InputError message={errors.bank_account_number} />
                     <p className="text-xs text-muted-foreground">{t('employees.form.bank_account_number_hint')}</p>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="iban">{t('employees.form.iban')}</Label>
-                    <Input id="iban" name="iban" value={formData.iban} onChange={handleChange} dir={isRTL ? 'rtl' : 'ltr'} />
+                    <Input id="iban" name="iban" value={formData.iban} onChange={handleChange} dir={isRTL ? 'rtl' : 'ltr'} aria-invalid={!!errors.iban} />
+                    <InputError message={errors.iban} />
                     <p className="text-xs text-muted-foreground">{t('employees.form.iban_hint')}</p>
                   </div>
                 </div>
@@ -321,6 +378,21 @@ export default function EmployeeCreate() {
               </div>
               <div className="rounded-lg border p-4 bg-muted/30">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid gap-2 md:col-span-2">
+                    <ImageUpload
+                      id="picture_file"
+                      name="picture_file"
+                      label={t('employees.form.picture', { defaultValue: 'Profile picture' })}
+                      hint={t('employees.form.picture_hint', { defaultValue: 'Upload a square image for best results' })}
+                      error={errors.picture_file}
+                      value={pictureFile}
+                      onChange={(file) => {
+                        setPictureFile(file);
+                        if (errors.picture_file) setErrors(prev => ({ ...prev, picture_file: '' }));
+                      }}
+                      maxSize={5}
+                    />
+                  </div>
                   <div className="grid gap-2">
                     <Label htmlFor="birth_date">{t('employees.form.birth_date')}</Label>
                     <Input id="birth_date" name="birth_date" type="date" value={formData.birth_date} onChange={handleChange} />
@@ -361,7 +433,7 @@ export default function EmployeeCreate() {
                 {isSubmitting ? (
                   <span className="flex items-center">
                     <LoadingSpinner size={16} />
-                    <span className="ms-2">{t('loading.please_wait', { defaultValue: 'Please wait...' })}</span>
+                    <span className="ms-2">{t('buttons.saving', { defaultValue: 'Saving...' })}</span>
                   </span>
                 ) : (
                   t('employees.form.submit')

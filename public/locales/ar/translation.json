@@ -6,6 +6,11 @@
   "menu": {
     "dashboard": "لوحة التحكم",
     "employees": "الموظفين",
+    "employees_list": "قائمة الموظفين",
+    "employees_create": "إنشاء موظف جديد",
+    "departments": "الأقسام",
+    "job_positions": "المناصب الوظيفية",
+    "archived_employees": "الموظفين المؤرشفين",
     "attendances": "الحضور",
     "vacations": "الإجازات",
     "requests": "الطلبات",
@@ -81,13 +86,16 @@
   "common": {
     "saved": "تم الحفظ",
     "save": "حفظ",
+    "new": "جديد",
     "cancel": "إلغاء",
     "password": "كلمة المرور",
     "back": "عودة",
     "remove": "إزالة",
     "loading": "جاري التحميل",
     "close": "إغلاق",
-    "next": "التالي"
+    "next": "التالي",
+    "no_results": "لا توجد نتائج",
+    "edit": "تعديل"
   },
   "user_menu": {
     "settings": "الإعدادات",
@@ -98,7 +106,37 @@
   },
   "validation": {
     "required": "مطلوب",
-    "maxLength": "يجب ألا يتجاوز الحد الأقصى {{length}} حرفاً"
+    "maxLength": "يجب ألا يتجاوز الحد الأقصى {{length}} حرفاً",
+    "full_name_invalid": "الاسم غير صالح",
+    "phone_invalid": "رقم الهاتف غير صالح",
+    "national_id_invalid": "رقم الهوية غير صالح",
+    "date_format_exact": "صيغة التاريخ يجب أن تكون {{format}}",
+    "bank_account_number_invalid": "تنسيق رقم الحساب البنكي غير صالح",
+    "iban_invalid": "تنسيق الآيبان غير صالح",
+    "attributes": {
+      "full_name": "الاسم الكامل",
+      "email": "البريد الإلكتروني",
+      "phone": "رقم الهاتف",
+      "national_id": "رقم الهوية",
+      "job_title": "المسمى الوظيفي",
+      "department": "القسم",
+      "manager": "المدير",
+      "hire_date": "تاريخ التعيين",
+      "work_location": "موقع العمل",
+      "address": "العنوان",
+      "country": "الدولة",
+      "city": "المدينة",
+      "salary": "الراتب",
+      "currency": "العملة",
+      "bank_name": "اسم البنك",
+      "bank_account_number": "رقم الحساب البنكي",
+      "iban": "الآيبان",
+      "birth_date": "تاريخ الميلاد",
+      "gender": "الجنس",
+      "marital_status": "الحالة الاجتماعية",
+      "nationality": "الجنسية",
+      "emergency_contact": "جهة اتصال للطوارئ"
+    }
   },
   "company": {
     "company_big_title" : "شركاتك",
@@ -217,6 +255,7 @@
   "employees": {
     "employees_big_title": "الموظفون",
     "employees_description_text": "إدارة الموظفين",
+    "archived_description_text": "عرض الموظفين المؤرشفين",
     "sections": {
       "basic_info": "المعلومات الأساسية",
       "basic_info_desc": "بيانات الهوية ووسائل التواصل",
@@ -271,6 +310,8 @@
       "iban_hint": "مثال: SA4420000001234567891234",
       "birth_date": "تاريخ الميلاد",
       "birth_date_hint": "مثال: 1995-07-20",
+      "picture": "صورة الملف الشخصي",
+      "picture_hint": "يفضل رفع صورة مربعة للحصول على أفضل نتيجة",
       "gender": "الجنس",
       "gender_select": "اختر الجنس",
       "gender_male": "ذكر",
@@ -281,16 +322,24 @@
       "nationality_hint": "مثال: مصري",
       "emergency_contact": "جهة اتصال للطوارئ",
       "emergency_contact_hint": "مثال: أحمد (+20 10 1234 5678)",
-      "submit": "إنشاء"
+      "submit": "إنشاء",
+      "department": "القسم",
+      "department_placeholder": "اختر القسم",
+      "department_search_placeholder": "ابحث عن القسم...",
+      "manager": "المدير المباشر",
+      "manager_placeholder": "اختر المدير",
+      "manager_search_placeholder": "ابحث عن المدير..."
     },
     "required_hint": "الحقول التي تحمل * مطلوبة",
     "search_placeholder": "بحث بالاسم أو الهاتف أو المسمى...",
     "total_employees_label": "إجمالي الموظفين",
       "table": {
+      "picture": "الصورة",
       "name": "الاسم",
       "gender": "الجنس",
       "phone": "رقم الهاتف",
       "job_title": "المسمى الوظيفي",
+      "department": "القسم",
       "hire_date": "تاريخ التعيين",
       "status": "الحالة",
       "no_employees": "لا يوجد موظفون بعد"
@@ -299,6 +348,7 @@
     "status_labels": {
       "active": "فعال",
       "suspended": "موقوف",
+      "archived": "مؤرشف",
       "unknown": "غير معروف"
     },
     "details": {
@@ -327,6 +377,97 @@
       "confirm_checkbox": "أؤكد رغبتي بنقل الربط",
       "linked_success": "تم ربط الموظف بالمستخدم بنجاح",
       "linked_error": "فشل في ربط الموظف بالمستخدم"
-    }
+    },
+    "export_excel": "تصدير إلى Excel"
+  },
+  "departments": {
+    "title": "الأقسام",
+    "description": "إدارة الأقسام داخل شركتك",
+    "archived_title": "الأقسام المؤرشفة",
+    "archived_description": "عرض الأقسام المؤرشفة",
+    "search_placeholder": "ابحث باسم القسم...",
+    "create_button": "إنشاء قسم",
+    "create_description": "أدخل اسم القسم واختر مدير القسم من الموظفين",
+    "edit": "تعديل القسم",
+    "edit_description": "تحديث بيانات القسم والمدير",
+    "back_to_list": "العودة للأقسام",
+    "details_title": "تفاصيل القسم",
+    "total_label": "إجمالي الأقسام",
+    "no_departments": "لا توجد أقسام",
+    "form": {
+      "name": "اسم القسم",
+      "admin": "مدير القسم",
+      "admin_placeholder": "اختر مدير القسم",
+      "admin_search_placeholder": "ابحث بالاسم...",
+      "selected_admin": "المشرف الحالي"
+    },
+    "table": {
+      "name": "اسم القسم",
+      "admin": "مدير القسم",
+      "actions": "إجراءات"
+    },
+    "update_success": "تم تحديث القسم بنجاح",
+    "update_error": "فشل في تحديث القسم",
+    "create_error": "فشل في إنشاء القسم",
+    "status_updated": "تم تحديث حالة القسم",
+    "archive": "أرشفة القسم",
+    "delete": "حذف القسم",
+    "activate": "تفعيل القسم",
+    "load_error": "فشل في تحميل بيانات القسم"
+  },
+  "job_positions": {
+    "title": "الوظائف",
+    "description": "إدارة المناصب الوظيفية داخل شركتك",
+    "archived_title": "الوظائف المؤرشفة",
+    "archived_description": "عرض المناصب الوظيفية المؤرشفة",
+    "search_placeholder": "ابحث باسم الوظيفة...",
+    "create_button": "إنشاء وظيفة",
+    "create_description": "أدخل اسم الوظيفة واختر المسؤول عنها",
+    "edit": "تعديل الوظيفة",
+    "edit_description": "تحديث بيانات الوظيفة والمسؤول",
+    "back_to_list": "العودة للوظائف",
+    "details": {
+      "title": "تفاصيل الوظيفة",
+      "description": "عرض تفاصيل المنصب الوظيفي",
+      "created_at": "تاريخ الإنشاء",
+      "updated_at": "آخر تحديث"
+    },
+    "total_label": "إجمالي الوظائف",
+    "total_archived_label": "إجمالي الوظائف المؤرشفة",
+    "no_positions": "لا توجد وظائف",
+    "no_archived_positions": "لا توجد وظائف مؤرشفة",
+    "not_found": "الوظيفة غير موجودة",
+    "form": {
+      "name": "اسم الوظيفة",
+      "admin": "المسؤول عن الوظيفة",
+      "admin_placeholder": "اختر المسؤول",
+      "admin_search_placeholder": "ابحث بالاسم..."
+    },
+    "table": {
+      "name": "اسم الوظيفة",
+      "admin": "المسؤول",
+      "status": "الحالة",
+      "actions": "إجراءات"
+    },
+    "status": {
+      "active": "فعال",
+      "archived": "مؤرشف"
+    },
+    "update_success": "تم تحديث الوظيفة بنجاح",
+    "update_error": "فشل في تحديث الوظيفة",
+    "create_error": "فشل في إنشاء الوظيفة",
+    "status_updated": "تم تحديث حالة الوظيفة",
+    "archive": "أرشفة الوظيفة",
+    "delete": "حذف الوظيفة",
+    "activate": "تفعيل الوظيفة",
+    "load_error": "فشل في تحميل بيانات الوظيفة"
+  },
+  "upload": {
+    "click_to_upload": "اضغط لرفع الملف",
+    "or_drag_drop": "أو اسحب وأفلت",
+    "max_size": "الحد الأقصى 5 ميجابايت",
+    "file_too_large": "حجم الملف يجب أن يكون أقل من {{maxSize}} ميجابايت",
+    "change_image": "تغيير الصورة",
+    "remove_image": "إزالة الصورة"
   }
 }

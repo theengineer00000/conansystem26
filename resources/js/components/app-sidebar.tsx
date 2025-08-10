@@ -19,6 +19,10 @@ import UmbrellaBeachSolidFullIcon from '@/components/icons/UmbrellaBeachSolidFul
 import ClipboardListSolidFullIcon from '@/components/icons/ClipboardListSolidFullIcon';
 import MoneyCheckDollarSolidFullIcon from '@/components/icons/MoneyCheckDollarSolidFullIcon';
 import CoinsSolidFullIcon from '@/components/icons/CoinsSolidFullIcon';
+import PlusSolidFullIcon from '@/components/icons/PlusSolidFullIcon';
+import DatabaseSolidFullIcon from '@/components/icons/DatabaseSolidFullIcon';
+import UserTieSolidFullIcon from '@/components/icons/UserTieSolidFullIcon';
+import BoxArchiveSolidFullIcon from '@/components/icons/BoxArchiveSolidFullIcon';
 
 export function createNavItems(t: (key: string) => string): { mainItems: NavItem[], footerItems: NavItem[] } {
     const mainNavItems: NavItem[] = [
@@ -31,6 +35,13 @@ export function createNavItems(t: (key: string) => string): { mainItems: NavItem
             title: t('menu.employees'),
             href: '/employees',
             icon: UsersSolidFullIcon,
+            items: [
+                { title: t('menu.employees_list'), href: '/employees', icon: UsersSolidFullIcon },
+                { title: t('menu.employees_create'), href: '/employees/create', icon: PlusSolidFullIcon },
+                { title: t('menu.departments'), href: '/departments', icon: DatabaseSolidFullIcon },
+                { title: t('menu.job_positions'), href: '/job-positions', icon: UserTieSolidFullIcon },
+                { title: t('menu.archived_employees'), href: '/employees/archived', icon: BoxArchiveSolidFullIcon },
+            ],
         },
         {
             title: t('menu.attendances'),

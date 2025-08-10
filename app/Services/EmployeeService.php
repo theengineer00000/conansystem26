@@ -5,6 +5,7 @@ namespace App\Services;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\EmployeeModel;
+use App\Services\R2Service;
 
 class EmployeeService
 {
@@ -44,9 +45,46 @@ class EmployeeService
             'marital_status' => ['nullable', 'string', 'max:50'],
             'nationality' => ['nullable', 'string', 'max:100', 'regex:/^[\p{L}\s\'-]+$/u'],
             'emergency_contact' => ['nullable', 'string'],
+            // Media
+            'picture_file' => ['nullable', 'file', 'image', 'max:5120'], // up to 5MB
         ];
 
-        $validator = Validator::make($request->all(), $rules);
+        // Localized messages and attribute names
+        // Return translation KEYS to be translated on the frontend (i18next)
+        $messages = [
+            'full_name.regex' => 'validation.full_name_invalid',
+            'phone.regex' => 'validation.phone_invalid',
+            'national_id.regex' => 'validation.national_id_invalid',
+            'hire_date.date_format' => 'validation.date_format_exact',
+            'bank_account_number.regex' => 'validation.bank_account_number_invalid',
+            'iban.regex' => 'validation.iban_invalid',
+        ];
+        $attributes = [
+            'full_name' => __('validation.attributes.full_name'),
+            'email' => __('validation.attributes.email'),
+            'phone' => __('validation.attributes.phone'),
+            'national_id' => __('validation.attributes.national_id'),
+            'job_title' => __('validation.attributes.job_title'),
+            'department_id' => __('validation.attributes.department'),
+            'manager_id' => __('validation.attributes.manager'),
+            'hire_date' => __('validation.attributes.hire_date'),
+            'work_location' => __('validation.attributes.work_location'),
+            'address' => __('validation.attributes.address'),
+            'country' => __('validation.attributes.country'),
+            'city' => __('validation.attributes.city'),
+            'salary' => __('validation.attributes.salary'),
+            'currency' => __('validation.attributes.currency'),
+            'bank_name' => __('validation.attributes.bank_name'),
+            'bank_account_number' => __('validation.attributes.bank_account_number'),
+            'iban' => __('validation.attributes.iban'),
+            'birth_date' => __('validation.attributes.birth_date'),
+            'gender' => __('validation.attributes.gender'),
+            'marital_status' => __('validation.attributes.marital_status'),
+            'nationality' => __('validation.attributes.nationality'),
+            'emergency_contact' => __('validation.attributes.emergency_contact'),
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages, $attributes);
 
         if ($validator->fails()) {
             $errorsBag = $validator->errors();
@@ -65,6 +103,19 @@ class EmployeeService
         }
 
         $validated = $validator->validated();
+
+        // Handle optional profile picture upload to R2
+        $pictureUrl = null;
+        if ($request->hasFile('picture_file')) {
+            $upload = R2Service::uploadToR2($request->file('picture_file'), 'employees/pictures');
+            if ($upload['success'] && !empty($upload['url'])) {
+                $pictureUrl = $upload['url'];
+            }
+        }
+
+        if ($pictureUrl !== null) {
+            $validated['picture_url'] = $pictureUrl;
+        }
 
         $result = EmployeeModel::CreateEmployee($validated);
 
@@ -143,9 +194,46 @@ class EmployeeService
             'marital_status' => ['nullable', 'string', 'max:50'],
             'nationality' => ['nullable', 'string', 'max:100', 'regex:/^[\p{L}\s\'-]+$/u'],
             'emergency_contact' => ['nullable', 'string'],
+            // Media
+            'picture_file' => ['nullable', 'file', 'image', 'max:5120'],
         ];
 
-        $validator = Validator::make($request->all(), $rules);
+        // Localized messages and attribute names
+        // Return translation KEYS to be translated on the frontend (i18next)
+        $messages = [
+            'full_name.regex' => 'validation.full_name_invalid',
+            'phone.regex' => 'validation.phone_invalid',
+            'national_id.regex' => 'validation.national_id_invalid',
+            'hire_date.date_format' => 'validation.date_format_exact',
+            'bank_account_number.regex' => 'validation.bank_account_number_invalid',
+            'iban.regex' => 'validation.iban_invalid',
+        ];
+        $attributes = [
+            'full_name' => __('validation.attributes.full_name'),
+            'email' => __('validation.attributes.email'),
+            'phone' => __('validation.attributes.phone'),
+            'national_id' => __('validation.attributes.national_id'),
+            'job_title' => __('validation.attributes.job_title'),
+            'department_id' => __('validation.attributes.department'),
+            'manager_id' => __('validation.attributes.manager'),
+            'hire_date' => __('validation.attributes.hire_date'),
+            'work_location' => __('validation.attributes.work_location'),
+            'address' => __('validation.attributes.address'),
+            'country' => __('validation.attributes.country'),
+            'city' => __('validation.attributes.city'),
+            'salary' => __('validation.attributes.salary'),
+            'currency' => __('validation.attributes.currency'),
+            'bank_name' => __('validation.attributes.bank_name'),
+            'bank_account_number' => __('validation.attributes.bank_account_number'),
+            'iban' => __('validation.attributes.iban'),
+            'birth_date' => __('validation.attributes.birth_date'),
+            'gender' => __('validation.attributes.gender'),
+            'marital_status' => __('validation.attributes.marital_status'),
+            'nationality' => __('validation.attributes.nationality'),
+            'emergency_contact' => __('validation.attributes.emergency_contact'),
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages, $attributes);
 
         if ($validator->fails()) {
             $errorsBag = $validator->errors();
@@ -165,7 +253,36 @@ class EmployeeService
 
         $validated = $validator->validated();
 
+        // Optional profile picture upload to R2 with cleanup of old image
+        $newUpload = null;
+        $oldPictureUrl = null;
+        if ($request->hasFile('picture_file')) {
+            // Get current employee picture to delete after successful update
+            $current = EmployeeModel::GetEmployeeDetails($employeeId);
+            if (($current['success'] ?? false) && isset($current['data']->picture_url)) {
+                $oldPictureUrl = (string) ($current['data']->picture_url ?? '');
+            }
+            $newUpload = R2Service::uploadToR2($request->file('picture_file'), 'employees/pictures');
+            if ($newUpload['success'] && !empty($newUpload['url'])) {
+                $validated['picture_url'] = $newUpload['url'];
+            } else {
+                return [
+                    'success' => false,
+                    'message' => $newUpload['message'] ?? 'Failed to upload picture',
+                ];
+            }
+        }
+
         $result = EmployeeModel::UpdateEmployee($employeeId, $validated);
+
+        // If update succeeded and a new image was uploaded, delete old image
+        if ($result['success'] && $newUpload && !empty($oldPictureUrl)) {
+            R2Service::deleteFromR2($oldPictureUrl);
+        }
+        // If update failed and a new image was uploaded, delete the newly uploaded image to avoid orphan files
+        if (!$result['success'] && $newUpload && !empty($newUpload['path'])) {
+            R2Service::deleteFromR2($newUpload['path']);
+        }
 
         if (!$result['success'] && isset($result['message']) && is_string($result['message'])) {
             $rawMessage = $result['message'];
@@ -238,8 +355,17 @@ class EmployeeService
      */
     public function linkEmployeeToUser(int $employeeId, int $userId, string $role = 'employee', bool $force = false): array
     {
-        if ($employeeId <= 0 || $userId <= 0) {
-            return ['success' => false, 'message' => 'Invalid data'];
+        // Validate inputs at service level
+        $employeeId = (int) $employeeId;
+        $userId = (int) $userId;
+        $role = (string) $role;
+        $force = (bool) $force;
+
+        if ($employeeId <= 0) {
+            return ['success' => false, 'message' => 'Invalid employee id'];
+        }
+        if ($userId <= 0) {
+            return ['success' => false, 'message' => 'Invalid user id'];
         }
         if (!in_array($role, ['manager', 'hr', 'employee'], true)) {
             $role = 'employee';

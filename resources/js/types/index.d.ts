@@ -21,6 +21,7 @@ export interface NavItem {
     icon?: LucideIcon | React.ComponentType<React.SVGProps<SVGSVGElement>> | null;
     isActive?: boolean;
     className?: string;
+    items?: NavItem[]; // Optional nested items for sidebar submenus
 }
 
 export interface SharedData {

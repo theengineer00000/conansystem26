@@ -84,13 +84,15 @@ class EmployeeModel
                     employee_code, company_id, job_title, department_id, manager_id,
                     hire_date, work_location, address, country, city,
                     salary, currency, bank_name, bank_account_number, iban,
-                    birth_date, gender, marital_status, nationality, emergency_contact
+                    birth_date, gender, marital_status, nationality, emergency_contact,
+                    picture_url
                 ) VALUES (
                     :full_name, :email, :phone, :national_id,
                     :employee_code, :company_id, :job_title, :department_id, :manager_id,
                     :hire_date, :work_location, :address, :country, :city,
                     :salary, :currency, :bank_name, :bank_account_number, :iban,
-                    :birth_date, :gender, :marital_status, :nationality, :emergency_contact
+                    :birth_date, :gender, :marital_status, :nationality, :emergency_contact,
+                    :picture_url
                 )
             ";
 
@@ -119,6 +121,7 @@ class EmployeeModel
                 'marital_status' => $data['marital_status'] ?? null,
                 'nationality' => $data['nationality'] ?? null,
                 'emergency_contact' => $data['emergency_contact'] ?? null,
+                'picture_url' => $data['picture_url'] ?? null,
             ]);
             $newId = (int) \DB::getPdo()->lastInsertId();
 
@@ -184,21 +187,22 @@ class EmployeeModel
                 e.phone,
                 e.job_title,
                 e.department_id,
+                d.name AS department_name,
                 e.manager_id,
                 e.hire_date,
                 e.gender,
+                e.picture_url,
                 e.is_active,
                 e.is_suspended,
                 e.is_deleted,
                 e.is_archived
             FROM employee e
+            LEFT JOIN department d ON e.department_id = d.id
             WHERE $where
-            ORDER BY e.full_name
+            ORDER BY e.full_name COLLATE utf8mb4_unicode_ci
             LIMIT $perPage OFFSET $offset
         ";
 
-        // PDO does not support named params for LIMIT/OFFSET with DB::select in some drivers,
-        // bind positionally to avoid issues
         $data = \DB::select($query, $params);
 
         $lastPage = $perPage > 0 ? (int) ceil($total / $perPage) : 0;
@@ -222,6 +226,97 @@ class EmployeeModel
     }
 
     /**
+     * Get list of archived employees for the current user's active company
+     */
+    public static function GetArchivedEmployeeList(int $page = 1, int $perPage = 10, string $search = '', int $newId = 0): array
+    {
+        $userId = \Auth::id();
+        if (!$userId) {
+            return ['data' => [], 'total' => 0, 'page' => $page, 'per_page' => $perPage, 'last_page' => 0];
+        }
+
+        $activeCompany = \DB::selectOne(
+            "SELECT company_id FROM company_user WHERE user_id = :user_id AND active = 1 LIMIT 1",
+            ['user_id' => $userId]
+        );
+
+        if (!$activeCompany || empty($activeCompany->company_id)) {
+            return ['data' => [], 'total' => 0, 'page' => $page, 'per_page' => $perPage, 'last_page' => 0];
+        }
+
+        $companyId = (int) $activeCompany->company_id;
+
+        $page = max(1, $page);
+        $perPage = max(1, min(100, $perPage));
+        $offset = ($page - 1) * $perPage;
+
+        $searchLike = '%' . trim($search) . '%';
+
+        // Build WHERE with optional search - archived only
+        $where = "e.company_id = :company_id AND e.is_deleted = 0 AND e.is_archived = 1";
+        $params = ['company_id' => $companyId];
+        if ($search !== '') {
+            $where .= " AND (e.full_name LIKE :kw1 OR e.email LIKE :kw2 OR e.phone LIKE :kw3 OR e.job_title LIKE :kw4)";
+            $params['kw1'] = $searchLike;
+            $params['kw2'] = $searchLike;
+            $params['kw3'] = $searchLike;
+            $params['kw4'] = $searchLike;
+        }
+
+        $totalResult = \DB::selectOne(
+            "SELECT COUNT(*) AS cnt FROM employee e WHERE $where",
+            $params
+        );
+        $total = (int) ($totalResult->cnt ?? 0);
+
+        $query = "
+            SELECT 
+                e.id,
+                e.full_name,
+                e.email,
+                e.phone,
+                e.job_title,
+                e.department_id,
+                d.name AS department_name,
+                e.manager_id,
+                e.hire_date,
+                e.gender,
+                e.picture_url,
+                e.is_active,
+                e.is_suspended,
+                e.is_deleted,
+                e.is_archived
+            FROM employee e
+            LEFT JOIN department d ON e.department_id = d.id
+            WHERE $where
+            ORDER BY e.full_name COLLATE utf8mb4_unicode_ci
+            LIMIT $perPage OFFSET $offset
+        ";
+
+        $data = \DB::select($query, $params);
+
+        $lastPage = $perPage > 0 ? (int) ceil($total / $perPage) : 0;
+
+        if ($newId > 0) {
+            foreach ($data as &$row) {
+                if ((int)($row->id ?? 0) === $newId) {
+                    $row->is_new = 1;
+                }
+            }
+        }
+
+        return [
+            'data' => $data,
+            'total' => $total,
+            'page' => $page,
+            'per_page' => $perPage,
+            'last_page' => $lastPage,
+        ];
+    }
+
+    // (removed) Search moved to DepartmentModel to search by name only
+
+    /**
      * Get single employee details for current user's active company
      */
     public static function GetEmployeeDetails(int $employeeId): array
@@ -241,7 +336,11 @@ class EmployeeModel
         $companyId = (int) $activeCompany->company_id;
 
         $emp = \DB::selectOne(
-            "SELECT * FROM employee WHERE id = :id AND company_id = :company_id AND is_deleted = 0 LIMIT 1",
+            "SELECT e.*, d.name AS department_name, m.full_name AS manager_name 
+             FROM employee e 
+             LEFT JOIN department d ON e.department_id = d.id
+             LEFT JOIN employee m ON e.manager_id = m.id
+             WHERE e.id = :id AND e.company_id = :company_id AND e.is_deleted = 0 LIMIT 1",
             ['id' => $employeeId, 'company_id' => $companyId]
         );
         if (!$emp) {
@@ -328,7 +427,8 @@ class EmployeeModel
                     gender = :gender,
                     marital_status = :marital_status,
                     nationality = :nationality,
-                    emergency_contact = :emergency_contact
+                    emergency_contact = :emergency_contact,
+                    picture_url = COALESCE(:picture_url, picture_url)
                 WHERE id = :id AND company_id = :company_id AND is_deleted = 0
             ";
 
@@ -355,6 +455,7 @@ class EmployeeModel
                 'marital_status' => $data['marital_status'] ?? null,
                 'nationality' => $data['nationality'] ?? null,
                 'emergency_contact' => $data['emergency_contact'] ?? null,
+                'picture_url' => $data['picture_url'] ?? null,
                 'id' => $employeeId,
                 'company_id' => $companyId,
             ]);

@@ -60,6 +60,24 @@ return [
             'report' => false,
         ],
 
+        'r2' => [
+            'driver' => 's3',
+            'key' => env('R2_ACCESS_KEY_ID'),
+            'secret' => env('R2_SECRET_ACCESS_KEY'),
+            'region' => env('R2_REGION', 'auto'),
+            'bucket' => env('R2_BUCKET'),
+            // Public base URL for serving files (e.g. https://pub-xxxxxxxxxxxx.r2.dev or your CDN/domain). Optional but recommended.
+            'url' => env('R2_PUBLIC_URL'),
+            // S3 API endpoint, e.g. https://<accountid>.r2.cloudflarestorage.com
+            'endpoint' => env('R2_ENDPOINT'),
+            // R2 typically requires path-style to work reliably with the AWS SDK
+            'use_path_style_endpoint' => env('R2_USE_PATH_STYLE_ENDPOINT', true),
+            // Default uploaded objects visibility
+            'visibility' => 'public',
+            'throw' => false,
+            'report' => false,
+        ],
+
     ],
 
     /*
